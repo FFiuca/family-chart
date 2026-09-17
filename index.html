@@ -311,12 +311,15 @@
                 data: [familyData],
 
                 // Lebih rapat dibanding layout sebelumnya
-                top: isMobile ? 80 : 105,
-                bottom: isMobile ? 45 : 55,
-                left: isMobile ? 10 : 25,
-                right: isMobile ? 10 : 25,
+                top: isMobile ? 90 : 105,
+                bottom: isMobile ? 55 : 55,
+                left: isMobile ? 16 : 25,
+                right: isMobile ? 16 : 25,
 
-                orient: 'TB',
+                // HP (potret): LR agar saudara-saudara bertumpuk ke BAWAH
+                // (ruang vertikal di HP lebih luas), bukan ke SAMPING
+                // (ruang horizontal sempit) — ini yang bikin node bertumpuk.
+                orient: isMobile ? 'LR' : 'TB',
                 layout: 'orthogonal',
 
                 edgeShape: 'polyline',
@@ -329,9 +332,13 @@
                 // Desktop: semua cabang terbuka.
                 initialTreeDepth: isMobile ? 2 : -1,
 
-                // Jarak antar level dibuat lebih pendek
-                layerPadding: isMobile ? 22 : 32,
-                nodeGap: isMobile ? 14 : 20,
+                // layerPadding = jarak ANTAR GENERASI. Di mode LR (HP) ini
+                // harus lebih lebar dari lebar kartu (nodeWidth) supaya kartu
+                // generasi berikutnya tidak numpuk ke kartu generasi sebelumnya.
+                // nodeGap = jarak ANTAR SAUDARA, dilebarkan agar kartu 2-3 baris
+                // teks tidak saling menempel.
+                layerPadding: isMobile ? nodeWidth + 45 : 32,
+                nodeGap: isMobile ? 34 : 20,
 
                 lineStyle: {
                     color: '#94a3b8',
@@ -396,12 +403,12 @@
 
                 // Sedikit membatasi zoom ekstrem
                 scaleLimit: {
-                    min: isMobile ? 0.45 : 0.6,
+                    min: isMobile ? 0.32 : 0.6,
                     max: 2.5
                 },
 
                 // Fokus visual pada root saat pertama dibuka
-                zoom: isMobile ? 0.95 : 0.85
+                zoom: isMobile ? 0.8 : 0.85
             }
         ]
     };
