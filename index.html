@@ -1,0 +1,451 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Silsilah Keluarga - Responsive</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        * { box-sizing: border-box; }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 24px 24px;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        #header {
+            position: absolute;
+            top: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+
+            width: calc(100% - 32px);
+            max-width: 450px;
+
+            padding: 10px 16px;
+            border-radius: 14px;
+
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+
+            text-align: center;
+        }
+
+        #header h1 {
+            margin: 0;
+            font-size: 1rem;
+            color: #0f172a;
+            font-weight: 700;
+        }
+
+        #header p {
+            margin: 4px 0 0;
+            font-size: 0.7rem;
+            color: #64748b;
+        }
+
+        #tree-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .legend {
+            position: absolute;
+            z-index: 100;
+            bottom: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 6px 10px;
+            border-radius: 10px;
+            background: rgba(255,255,255,.88);
+            border: 1px solid #e2e8f0;
+            color: #64748b;
+            font-size: 10px;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+        #header {
+            transition: opacity .25s ease, transform .25s ease;
+        }
+
+        #header.hidden {
+            opacity: 0;
+            transform: translateX(-50%) translateY(-12px);
+            pointer-events: none;
+        }
+
+        .fab {
+            position: absolute;
+            z-index: 110;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(226, 232, 240, 0.9);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        #headerToggle {
+            top: 14px;
+            right: 14px;
+        }
+
+        #homeBtn {
+            bottom: 60px;
+            right: 14px;
+        }
+
+        @media (min-width: 601px) {
+            #headerToggle { top: 20px; right: 20px; }
+            #homeBtn { bottom: 70px; right: 20px; }
+        }
+
+        @media (min-width: 601px) {
+            #header {
+                top: 20px;
+                padding: 12px 24px;
+                border-radius: 16px;
+            }
+
+            #header h1 { font-size: 1.1rem; }
+            #header p { font-size: 0.75rem; }
+        }
+
+        @media (max-width: 380px) {
+            #header {
+                width: calc(100% - 24px);
+                padding: 8px 10px;
+                top: 9px;
+            }
+
+            #header h1 { font-size: 0.88rem; }
+            #header p { font-size: 0.62rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="header">
+    <h1>🌳 Silsilah Mbah Buyut Rakinem</h1>
+    <p>Geser &amp; zoom untuk melihat keluarga • Ketuk cabang untuk membuka/menutup</p>
+</div>
+
+<div id="tree-container"></div>
+<div class="fab" id="headerToggle" title="Sembunyikan/tampilkan judul">👁️</div>
+<div class="fab" id="homeBtn" title="Kembali ke tampilan awal">🏠</div>
+<div class="legend">💡 Ketuk node untuk membuka cabangnya • Tersesat? Ketuk 🏠</div>
+
+<script>
+    const chartDom = document.getElementById('tree-container');
+    const myChart = echarts.init(chartDom);
+
+    const isMobile = window.innerWidth <= 600;
+
+    const familyData = {
+        name: 'Mbah Buyut Rakinem',
+        label: {
+            backgroundColor: '#0f172a',
+            color: '#f8fafc',
+            borderColor: '#1e293b'
+        },
+        children: [
+            {
+                name: 'A. Mbah Sarju',
+                children: [
+                    {
+                        name: 'Lasno\n(Ponorogo)',
+                        children: [
+                            { name: 'Wati' },
+                            { name: 'Rini' },
+                            { name: 'Gatut' },
+                            { name: 'Ida' }
+                        ]
+                    },
+                    {
+                        name: 'Mini\n(Magelang)',
+                        children: [
+                            { name: 'Andi' },
+                            { name: 'Tomo' },
+                            { name: 'Yanto' },
+                            { name: 'Yono' }
+                        ]
+                    }
+                ]
+            },
+            {
+                name: 'B. Mbah Sarmi',
+                children: [
+                    {
+                        name: 'Slamet\n(Madiun)',
+                        children: [
+                            { name: 'Win' },
+                            { name: 'Hendri' },
+                            { name: 'Widi' }
+                        ]
+                    },
+                    {
+                        name: 'Mbah Tumi',
+                        children: [
+                            {
+                                name: 'Edy Prajitno\n(Istri: Ratna Amrini)',
+                                children: [
+                                    {
+                                        name: 'Zahara Arie Hidayat\n(Istri: Lisa Ernawati C)',
+                                        children: [
+                                            { name: 'Aisha Shofia Azzahra' },
+                                            { name: 'Khawla Adiba Azzahra' }
+                                        ]
+                                    },
+                                    { name: 'Rizqi Ainurrohman' },
+                                    { name: 'Rizqa Novita Rohmah' }
+                                ]
+                            },
+                            {
+                                name: 'Parini\n(Suami: Seno)',
+                                children: [
+                                    {
+                                        name: 'Dyka Rahayu Meyla Sari\n(Suami: Akbar Nur Prasatya)',
+                                        children: [
+                                            { name: 'Fatih Umar Ali' },
+                                            { name: 'Maulana Usman Ibrahim' },
+                                            { name: 'Jehana Talita Saliha' }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                name: 'Purwanto\n(Istri: Sringatun)',
+                                children: [
+                                    { name: 'Beni Prabawanto\n(Istri: Lova)' },
+                                    { name: 'Jovan Hendi Wijaya' }
+                                ]
+                            },
+                            { name: 'Susiswo (alm)' },
+                            {
+                                name: 'Tutik Supriati\n(Suami: Choirul Anam)',
+                                children: [
+                                    { name: 'Fikri Fiuca Fardana' },
+                                    { name: 'Fahmi Helmi Rahmania' }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                name: 'C. Mbah Sarti',
+                children: [
+                    { name: 'Sartun' },
+                    { name: 'Samadi' },
+                    { name: 'Tin' },
+                    { name: 'Hari' },
+                    { name: 'Hesti' }
+                ]
+            },
+            {
+                name: 'D. Mbah Sariyem',
+                children: [
+                    { name: 'Sugi' },
+                    { name: 'Suci' },
+                    { name: 'Kamto' },
+                    { name: 'Warno (alm)' },
+                    { name: 'Sri' },
+                    { name: 'Istanti' },
+                    { name: 'Tining' }
+                ]
+            }
+        ]
+    };
+
+    const nodeWidth = isMobile ? 92 : 116;
+
+    const option = {
+        tooltip: {
+            trigger: 'item',
+            backgroundColor: 'rgba(255,255,255,0.96)',
+            borderColor: '#e2e8f0',
+            textStyle: { color: '#0f172a' },
+            formatter: function(params) {
+                return params.name.replace(/\n/g, '<br>');
+            }
+        },
+
+        series: [
+            {
+                type: 'tree',
+                data: [familyData],
+
+                // Lebih rapat dibanding layout sebelumnya
+                top: isMobile ? 80 : 105,
+                bottom: isMobile ? 45 : 55,
+                left: isMobile ? 10 : 25,
+                right: isMobile ? 10 : 25,
+
+                orient: 'TB',
+                layout: 'orthogonal',
+
+                edgeShape: 'polyline',
+                edgeForkPosition: '50%',
+
+                symbol: 'circle',
+                symbolSize: 1,
+
+                // Mobile: buka sampai generasi utama saja.
+                // Desktop: semua cabang terbuka.
+                initialTreeDepth: isMobile ? 2 : -1,
+
+                // Jarak antar level dibuat lebih pendek
+                layerPadding: isMobile ? 22 : 32,
+                nodeGap: isMobile ? 14 : 20,
+
+                lineStyle: {
+                    color: '#94a3b8',
+                    width: isMobile ? 1.2 : 1.5
+                },
+
+                label: {
+                    show: true,
+                    position: 'center',
+
+                    backgroundColor: '#2563eb',
+                    color: '#ffffff',
+                    borderColor: '#1d4ed8',
+                    borderWidth: 1,
+                    borderRadius: 7,
+
+                    padding: isMobile ? [6, 7] : [9, 12],
+
+                    fontSize: isMobile ? 9 : 11,
+                    fontFamily: 'Inter, sans-serif',
+                    fontWeight: '600',
+                    lineHeight: isMobile ? 12 : 15,
+
+                    width: nodeWidth,
+                    overflow: 'break',
+                    align: 'center',
+                    verticalAlign: 'middle',
+
+                    shadowColor: 'rgba(37, 99, 235, 0.18)',
+                    shadowBlur: 7,
+                    shadowOffsetY: 3
+                },
+
+                leaves: {
+                    label: {
+                        backgroundColor: '#ffffff',
+                        color: '#334155',
+                        borderColor: '#cbd5e1',
+                        borderWidth: 1.2,
+                        borderRadius: 7,
+
+                        width: isMobile ? 82 : 100,
+                        overflow: 'break',
+
+                        padding: isMobile ? [5, 6] : [8, 10],
+
+                        fontSize: isMobile ? 8.5 : 10.5,
+                        lineHeight: isMobile ? 12 : 14,
+
+                        shadowColor: 'rgba(0, 0, 0, 0.04)',
+                        shadowBlur: 4,
+                        shadowOffsetY: 2
+                    }
+                },
+
+                expandAndCollapse: true,
+                animationDuration: 350,
+                animationDurationUpdate: 350,
+
+                // Pan + zoom
+                roam: true,
+
+                // Sedikit membatasi zoom ekstrem
+                scaleLimit: {
+                    min: isMobile ? 0.45 : 0.6,
+                    max: 2.5
+                },
+
+                // Fokus visual pada root saat pertama dibuka
+                zoom: isMobile ? 0.95 : 0.85
+            }
+        ]
+    };
+
+    myChart.setOption(option);
+
+    window.addEventListener('resize', function() {
+        myChart.resize();
+    });
+
+    // Safety net: in some embedded/preview environments the container
+    // can report 0 size at the instant echarts initializes, which
+    // renders nothing. Re-measure a couple of times shortly after load.
+    window.addEventListener('load', function() { myChart.resize(); });
+    setTimeout(function() { myChart.resize(); }, 100);
+    setTimeout(function() { myChart.resize(); }, 500);
+
+    // --- Toggle header (title card) show/hide ---
+    const headerEl = document.getElementById('header');
+    const headerToggleBtn = document.getElementById('headerToggle');
+    headerToggleBtn.addEventListener('click', function() {
+        headerEl.classList.toggle('hidden');
+        headerToggleBtn.textContent = headerEl.classList.contains('hidden') ? '🙈' : '👁️';
+    });
+
+    // --- Home button: refit the whole tree back into view ---
+    document.getElementById('homeBtn').addEventListener('click', function() {
+        myChart.dispatchAction({ type: 'restore' });
+    });
+
+    // --- Fix: expanding/collapsing a deep node can push the newly
+    // revealed branch outside the current pan/zoom viewport, which
+    // looks like the canvas went blank. After any node is toggled,
+    // automatically refit the tree so the result of the tap is
+    // always visible. Leaf taps (no children to expand) are skipped
+    // since nothing on screen changes for those.
+    myChart.on('click', function(params) {
+        if (params.dataType === 'node' && params.data && params.data.children && params.data.children.length) {
+            setTimeout(function() {
+                myChart.dispatchAction({ type: 'restore' });
+            }, option.series[0].animationDuration + 60);
+        }
+    });
+</script>
+
+</body>
+</html>
